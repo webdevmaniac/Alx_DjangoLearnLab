@@ -1,9 +1,8 @@
-In the Django shell, execute the following command to create a new Book instance:
+Create Operation
 
 from bookshelf.models import Book
-book = Book(title="1984", author="George Orwell", publication_year=1949)
-book.save()
+book = Book.objects.create(title="1984", author="George Orwell", publication_year=1949)
 
-Expected output:
+Expected Output
+Successful creation of the book instance
 
-# Successful creation of the book instance
