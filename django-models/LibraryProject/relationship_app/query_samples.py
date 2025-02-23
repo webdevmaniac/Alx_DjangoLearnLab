@@ -11,7 +11,8 @@ def query_books_by_author(author_name):
     Returns:
         QuerySet: A queryset of books written by the author.
     """
-    books = Book.objects.filter(author__name=author_name)
+    author = Author.objects.get(name=author_name)
+    books = Book.objects.filter(author=author)
     return books
 
 def list_books_in_library(library_name):
