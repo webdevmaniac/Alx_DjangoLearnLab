@@ -141,3 +141,17 @@ CSP_DEFAULT_SRC = ["'self'"]
 CSP_STYLE_SRC = ["'self'", "https://fonts.googleapis.com"]
 CSP_SCRIPT_SRC = ["'self'", "https://cdn.jsdelivr.net"]
 
+# Security settings
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000  # One year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Cookie settings
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Header settings
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
