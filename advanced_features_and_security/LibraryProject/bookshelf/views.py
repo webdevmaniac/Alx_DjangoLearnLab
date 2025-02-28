@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required
 from .models import Book
-from .forms import BookForm, ExampleForm  # Import ExampleForm
+from .forms import BookForm
 from django.db.models import Q
 
 @permission_required('bookshelf.can_view_book', raise_exception=True)
@@ -46,13 +46,3 @@ def search_books(request):
         Q(title__icontains=query) | Q(author__icontains=query)
     )
     return render(request, 'search_results.html', {'books': books})
-
-def example_view(request):
-    if request.method == 'POST':
-        form = ExampleForm(request.POST)
-        if form.is_valid():
-            # Process the form data
-            pass
-    else:
-        form = ExampleForm()
-    return render(request, 'example.html', {'form': form})
