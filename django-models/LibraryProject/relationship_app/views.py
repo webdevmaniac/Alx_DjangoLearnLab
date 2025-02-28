@@ -122,3 +122,25 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'member_view.html')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        # Login logic here
+        pass
+    return render(request, 'relationship_app/login.html')
+
+def logout_view(request):
+    # Logout logic here
+    pass
+    return render(request, 'relationship_app/logout.html')
