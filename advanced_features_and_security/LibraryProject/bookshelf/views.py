@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required
 from .models import Book
 from .forms import BookForm
+from django.shortcuts import render, redirect
+from .forms import BookForm
+from .models import Book
 from django.db.models import Q
 
 @permission_required('bookshelf.can_view_book', raise_exception=True)
@@ -76,26 +79,27 @@ def search_books(request):
     )
     return render(request, 'search_results.html', {'books': books})
 
-def register(request):
+
+def create_book(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = BookForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
+            form.save()
+            return redirect('book_list')
     else:
-        form = UserCreationForm()
-    return render(request, 'templates/relationship_app/register.html', {'form': form})
+        form = BookForm()
+    return render(request, 'create_book.html', {'form': form})
 
-def login_view(request):
+def edit_book(request, pk):
+    book = Book.objects.get(pk=pk)
     if request.method == 'POST':
-        # Login logic here
-        pass
-    return render(request, 'templates/relationship_app/login.html')
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = BookForm(instance=book)
+    return render(request, 'edit_book.html', {'form': form})
 
-def logout_view(request):
-    # Logout logic here
-    pass
-    return render(request, 'templates/relationship_app/logout.html')
 
 
