@@ -85,6 +85,17 @@ def register(request):
             return redirect('home')
     else:
         form = UserCreationForm()
-    return render(request, 'relationship_app/register.html', {'form': form})
+    return render(request, 'templates/relationship_app/register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        # Login logic here
+        pass
+    return render(request, 'templates/relationship_app/login.html')
+
+def logout_view(request):
+    # Logout logic here
+    pass
+    return render(request, 'templates/relationship_app/logout.html')
 
 
