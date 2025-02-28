@@ -16,9 +16,12 @@ class Book(models.Model):
     class Meta:
         permissions = [
             ('can_add_book', 'Can add book'),
+            ('can_view_books', 'Can view books'),
             ('can_change_book', 'Can change book'),
             ('can_delete_book', 'Can delete book'),
         ]
+
+        
 
     def __str__(self):
         return self.title
