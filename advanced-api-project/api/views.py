@@ -6,19 +6,23 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 
 class BookListView(generics.ListAPIView):
     """Lists all books."""
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Book.objects.all()
 
 class BookDetailView(generics.RetrieveAPIView):
     """Retrieves a single book by ID."""
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
+    lookup_field = 'pk'
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Book.objects.all()
 
 class BookCreateView(generics.CreateAPIView):
     """Creates a new book."""
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
 
@@ -28,9 +32,12 @@ class BookCreateView(generics.CreateAPIView):
 
 class BookUpdateView(generics.UpdateAPIView):
     """Updates an existing book."""
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
+    lookup_field = 'pk'
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Book.objects.all()
 
     def perform_update(self, serializer):
         """Saves the updated book instance."""
@@ -38,6 +45,9 @@ class BookUpdateView(generics.UpdateAPIView):
 
 class BookDeleteView(generics.DestroyAPIView):
     """Deletes a book."""
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
+    lookup_field = 'pk'
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Book.objects.all()
