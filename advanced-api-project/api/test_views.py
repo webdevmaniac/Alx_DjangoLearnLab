@@ -1,12 +1,14 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
+from django.contrib.auth.models import User
 from .models import Book
 from .serializers import BookSerializer
 
 class BookAPITestCase(APITestCase):
     def setUp(self):
-        self.client = APIClient()
+        self.user = User.objects.create_superuser('testuser', 'testuser@example.com', 'password')
+        self.client.force_authenticate(user=self.user)
         self.book1 = Book.objects.create(title='Book 1', author='Author 1', publication_year=2020)
         self.book2 = Book.objects.create(title='Book 2', author='Author 2', publication_year=2021)
 
