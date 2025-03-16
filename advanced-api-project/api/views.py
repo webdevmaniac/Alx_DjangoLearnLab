@@ -5,17 +5,18 @@ from .models import Book
 from .serializers import BookSerializer
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-
+from django_filters import rest_framework as filters
 
 # Create your views here.
 class BookListView(generics.ListAPIView):
     """Lists all books."""
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [AuthReadOnly]
-
-    def get_queryset(self):
-        return Book.objects.all()
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['title', 'author', 'publication_year']
+    search_fields = ['title', 'author']
+    ordering_fields = ['title', 'publication_year']
 
 class BookDetailView(generics.RetrieveAPIView):
     """Retrieves a single book by ID."""
@@ -56,28 +57,3 @@ class BookDeleteView(generics.DestroyAPIView):
 
     def get_queryset(self):
         return Book.objects.all()
-
-
-class BookListView(generics.ListAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['title', 'author', 'publication_year']
-
-
-class BookListView(generics.ListAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['title', 'author', 'publication_year']
-    search_fields = ['title', 'author']
-
-
-class BookListView(generics.ListAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['title', 'author', 'publication_year']
-    search_fields = ['title', 'author']
-    ordering_fields = ['title', 'publication_year']
-
