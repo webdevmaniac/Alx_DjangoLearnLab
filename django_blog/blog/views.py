@@ -2,16 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post
-from .forms import PostForm
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from .models import Post, Comment
-from .forms import CommentForm
+from .forms import PostForm, CommentForm
+from django.urls import reverse
 
 def register(request):
     if request.method == 'POST':
@@ -45,15 +40,6 @@ def logout_view(request):
 def profile_view(request):
     return render(request, 'profile.html')
 
-
-@login_required
-def profile_view(request):
-    if request.method == 'POST':
-        # Update user profile information
-        pass
-    return render(request, 'profile.html')
-
-
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -61,6 +47,12 @@ class PostListView(ListView):
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()
+        context['comment_form'] = CommentForm()
+        return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -93,21 +85,10 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
-
-class PostDetailView(DetailView):
-    model = Post
-    template_name = 'blog/post_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['comments'] = self.object.comments.all()
-        context['comment_form'] = CommentForm()
-        return context
-
-@login_required
-def add_comment(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
+class CommentCreateView(View):
+    @login_required
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -115,26 +96,25 @@ def add_comment(request, pk):
             comment.author = request.user
             comment.save()
             return redirect('post_detail', pk=pk)
-    else:
-        form = CommentForm()
-    return render(request, 'blog/add_comment.html', {'form': form})
+        else:
+            form = CommentForm()
+            return render(request, 'blog/add_comment.html', {'form': form})
 
-@login_required
-def edit_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    if request.method == 'POST':
+class CommentUpdateView(View):
+    @login_required
+    def post(self, request, pk, comment_pk):
+        comment = get_object_or_404(Comment, pk=comment_pk)
         form = CommentForm(request.POST, instance=comment)
         if form.is_valid():
             form.save()
             return redirect('post_detail', pk=comment.post.pk)
-    else:
-        form = CommentForm(instance=comment)
-    return render(request, 'blog/edit_comment.html', {'form': form})
+        else:
+            form = CommentForm(instance=comment)
+            return render(request, 'blog/edit_comment.html', {'form': form})
 
-@login_required
-def delete_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    if request.method == 'POST':
+class CommentDeleteView(View):
+    @login_required
+    def post(self, request, pk, comment_pk):
+        comment = get_object_or_404(Comment, pk=comment_pk)
         comment.delete()
         return redirect('post_detail', pk=comment.post.pk)
-    return render(request, 'blog/delete_comment.html', {'comment': comment})
