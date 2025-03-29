@@ -5,8 +5,34 @@
   <p>{{ post.content }}</p>
   <p>Author: {{ post.author }}</p>
   <p>Published: {{ post.published_date }}</p>
+
   {% if user == post.author %}
     <p><a href="{% url 'post_update' post.pk %}">Edit post</a></p>
     <p><a href="{% url 'post_delete' post.pk %}">Delete post</a></p>
   {% endif %}
+
+  <h2>Comments:</h2>
+  <ul>
+    {% for comment in post.comments.all %}
+      <li>
+        {{ comment.content }}
+        <p>Author: {{ comment.author }}</p>
+        <p>Published: {{ comment.created_at }}</p>
+        {% if user == comment.author %}
+          <p><a href="{% url 'edit_comment' post.pk comment.pk %}">Edit</a></p>
+          <p><a href="{% url 'delete_comment' post.pk comment.pk %}">Delete</a></p>
+        {% endif %}
+      </li>
+    {% empty %}
+      <p>No comments available.</p>
+    {% endfor %}
+  </ul>
+
+  <h2>Add a comment:</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Submit</button>
+  </form>
 {% endblock %}
+
