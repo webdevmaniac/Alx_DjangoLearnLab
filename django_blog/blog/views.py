@@ -7,6 +7,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from django.urls import reverse
+from django.db.models import Q
+from .models import Post
+from django.shortcuts import render
+from .models import Post
+from taggit.models import Tag
 
 def register(request):
     if request.method == 'POST':
@@ -118,3 +123,16 @@ class CommentDeleteView(View):
         comment = get_object_or_404(Comment, pk=comment_pk)
         comment.delete()
         return redirect('post_detail', pk=comment.post.pk)
+    
+
+
+def search(request):
+    query = request.GET.get('q')
+    posts = Post.objects.filter(Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query))
+    return render(request, 'blog/search_results.html', {'posts': posts})
+
+
+def tag_detail(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags__in=[tag])
+    return render(request, 'blog/tag_detail.html', {'posts': posts})
