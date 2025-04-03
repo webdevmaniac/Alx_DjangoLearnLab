@@ -53,7 +53,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
 ]
+
 
 ROOT_URLCONF = 'social_media_api.urls'
 
@@ -134,3 +137,54 @@ REST_FRAMEWORK = {
     ],
 }
 
+DEBUG = False
+
+ALLOWED_HOSTS = ['your-domain.com']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'your-database-name',
+        'USER': 'your-database-user',
+        'PASSWORD': 'your-database-password',
+        'HOST': 'your-database-host',
+        'PORT': '5432',
+    }
+}
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_SSL_REDIRECT = True
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+AWS_ACCESS_KEY_ID = 'your-aws-access-key-id'
+AWS_SECRET_ACCESS_KEY = 'your-aws-secret-access-key'
+AWS_STORAGE_BUCKET_NAME = 'your-aws-storage-bucket-name'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_REGION_NAME = 'your-aws-region-name'
+
+# Add AWS S3 to DEFAULT_FILE_STORAGE
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'logs/social_media_api.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+    },
+}
