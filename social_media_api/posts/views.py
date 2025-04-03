@@ -9,6 +9,11 @@ from rest_framework.views import APIView
 from .models import Post
 from .serializers import PostSerializer
 from accounts.models import User
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Post, Like
+from .serializers import PostSerializer, LikeSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -37,3 +42,18 @@ class FeedView(APIView):
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
+
+class LikePostView(APIView):
+    def post(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if created:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_304_NOT_MODIFIED)
+
+class UnlikePostView(APIView):
+    def post(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        Like.objects.filter(user=request.user, post=post).delete()
+        return Response(status=status.HTTP_200_OK)
