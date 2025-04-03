@@ -14,6 +14,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post, Like
 from .serializers import PostSerializer, LikeSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import generics
+from .models import Post, Like
+from .serializers import PostSerializer, LikeSerializer
+from notifications.models import Notification
+from django.contrib.auth.models import User
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -55,5 +63,27 @@ class LikePostView(APIView):
 class UnlikePostView(APIView):
     def post(self, request, post_id):
         post = Post.objects.get(id=post_id)
+        Like.objects.filter(user=request.user, post=post).delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class LikePostView(APIView):
+    def post(self, request, pk):
+        post = generics.get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if created:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb='liked',
+                target=post
+            )
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_304_NOT_MODIFIED)
+
+class UnlikePostView(APIView):
+    def post(self, request, pk):
+        post = generics.get_object_or_404(Post, pk=pk)
         Like.objects.filter(user=request.user, post=post).delete()
         return Response(status=status.HTTP_200_OK)
