@@ -11,6 +11,8 @@ class UserFollowView(generics.GenericAPIView):
     serializer_class = CustomUserSerializer
 
     def get(self, request):
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         users = self.get_queryset()
         serializer = self.get_serializer(users, many=True)
         return Response(serializer.data)
