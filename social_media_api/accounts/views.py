@@ -7,6 +7,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User
 from .serializers import UserSerializer
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .models import CustomUser
+from .serializers import CustomUserSerializer
 
 class RegisterView(APIView):
     def post(self, request):
@@ -36,3 +41,12 @@ class UnfollowUserView(APIView):
         user_to_unfollow = User.objects.get(id=user_id)
         request.user.following.remove(user_to_unfollow)
         return Response(status=status.HTTP_200_OK)
+
+
+class UserFollowView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users = CustomUser.objects.all()
+        serializer = CustomUserSerializer(users, many=True)
+        return Response(serializer.data)
