@@ -9,7 +9,10 @@ router.register(r'posts/(?P<post_id>\d+)/comments', views.CommentViewSet, basena
 urlpatterns = [
     path('', include(router.urls)),
     path('feed/', views.FeedView.as_view()),
-    path('posts/<int:post_id>/like/', views.LikePostView.as_view()),
-    path('posts/<int:post_id>/unlike/', views.UnlikePostView.as_view()),
+    path('posts/<int:pk>/like/', views.LikePostView.as_view()),
+    path('posts/<int:pk>/unlike/', views.UnlikePostView.as_view()),
 
 ]
+
+
+
