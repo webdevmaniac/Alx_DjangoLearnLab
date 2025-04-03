@@ -2,6 +2,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, LoginSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import User
+from .serializers import UserSerializer
 
 class RegisterView(APIView):
     def post(self, request):
@@ -19,3 +24,15 @@ class LoginView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FollowUserView(APIView):
+    def post(self, request, user_id):
+        user_to_follow = User.objects.get(id=user_id)
+        request.user.following.add(user_to_follow)
+        return Response(status=status.HTTP_201_CREATED)
+
+class UnfollowUserView(APIView):
+    def post(self, request, user_id):
+        user_to_unfollow = User.objects.get(id=user_id)
+        request.user.following.remove(user_to_unfollow)
+        return Response(status=status.HTTP_200_OK)

@@ -9,3 +9,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+class User(AbstractUser):
+    following = models.ManyToManyField('self', symmetrical=False, blank=True)
