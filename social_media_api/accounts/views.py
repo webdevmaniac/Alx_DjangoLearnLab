@@ -1,9 +1,19 @@
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import CustomUser
 from .serializers import CustomUserSerializer
+
+class UserFollowView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+
+    def get(self, request):
+        users = self.get_queryset()
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)
 
 class FollowUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -20,11 +30,3 @@ class UnfollowUserView(APIView):
         user_to_unfollow = CustomUser.objects.get(id=user_id)
         request.user.following.remove(user_to_unfollow)
         return Response(status=status.HTTP_200_OK)
-
-class UserFollowView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        users = CustomUser.objects.all()
-        serializer = CustomUserSerializer(users, many=True)
-        return Response(serializer.data)
